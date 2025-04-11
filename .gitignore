@@ -1,0 +1,14 @@
+# Node (Angular)
+node_modules/
+dist/
+.angular/
+.env
+
+# Python (Flask)
+__pycache__/
+*.pyc
+.env
+db.py
+
+# VSCode
+.vscode/
