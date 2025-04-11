@@ -3,6 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from db import MONGO_URI
+from bson.errors import InvalidId 
 
 # ✅ Initialize Flask app
 app = Flask(__name__)
@@ -67,16 +68,24 @@ def update_status():
         return jsonify({'error': 'Missing task ID or status'}), 400
 
     try:
+        # ✅ Validate ObjectId format
+        object_id = ObjectId(task_id)
+
         result = tasks_collection.update_one(
-            {'_id': ObjectId(task_id)},
+            {'_id': object_id},
             {'$set': {'status': new_status}}
         )
+
         if result.matched_count == 0:
             return jsonify({'error': 'Task not found'}), 404
+
         return jsonify({'message': 'Status updated'}), 200
 
+    except InvalidId:
+        return jsonify({'error': 'Invalid task ID format'}), 400
+
     except Exception as e:
-        print("Error updating task:", e)
+        print("❌ Error updating task:", e)
         return jsonify({'error': 'Server error'}), 500
 
 # ✅ Signup (Elder or Volunteer)
